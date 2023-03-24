@@ -29,6 +29,12 @@ export const ChatMessage: FC<Props> = ({ message, lightMode, onChangeMessage, me
     onChangeMessage("edit", textareaRef.current?.value.trim() || message.content);
   }
 
+  const handleEditAndRegenMessageContent = () => {
+    setIsEditing(false);
+    onChangeMessage("edit", textareaRef.current?.value.trim() || message.content);
+    onChangeMessage("regen", "");
+  }
+
   return (
     <div
       className={`group ${message.role === "assistant" ? "text-gray-800 dark:text-gray-100 border-b border-black/10 dark:border-gray-900/50 bg-gray-50 dark:bg-[#444654]" : "text-gray-800 dark:text-gray-100 border-b border-black/10 dark:border-gray-900/50 bg-white dark:bg-[#343541]"}`}
@@ -38,6 +44,7 @@ export const ChatMessage: FC<Props> = ({ message, lightMode, onChangeMessage, me
         {isEditing ? (<>
           <div className="font-bold min-w-[40px]">{message.role === "assistant" ? "AI:" : "You:"}</div>
           <div className="prose dark:prose-invert mt-[-2px] w-full">
+            {/* submit: ctrl + s, regen: ctrl + enter, hover on button to get hint*/}
             <textarea
               className="h-32 p-2 border border-gray-300 dark:border-gray-700 
               rounded-md focus:outline-none focus:ring-2 focus:ring-blue-600 
@@ -46,14 +53,34 @@ export const ChatMessage: FC<Props> = ({ message, lightMode, onChangeMessage, me
               w-full"
               ref={textareaRef}
               defaultValue={message.content}
+              onKeyDown={(e) => {
+                if (e.ctrlKey && e.key === "s") {
+                  e.preventDefault();
+                  handleSubmmitMessageContent();
+                }
+                if (e.ctrlKey && e.key === "Enter") {
+                  e.preventDefault();
+                  handleEditAndRegenMessageContent();
+                }
+              }}
             />
-
             <button
               className=" float-right
+              w-24 h-10 bg-green-600 text-white rounded-md
+              hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-blue-600
+              focus:ring-opacity-50"
+              onClick={handleEditAndRegenMessageContent}
+              title="Ctrl + Enter"
+            >
+              Regen
+            </button>
+            <button
+              className=" float-right mr-2
               w-24 h-10 bg-blue-600 text-white rounded-md 
               hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-600 
               focus:ring-opacity-50"
               onClick={handleSubmmitMessageContent}
+              title="Ctrl + S"
             >
               Submit
             </button>
