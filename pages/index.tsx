@@ -84,12 +84,12 @@ export default function Home() {
     }
   }
 
-  const handleSend = async (message: Message, isResend: boolean, providedSelectedConversation?: Conversation ) => {
+  const handleSend = async (message: Message, isResend: boolean, providedSelectedConversation?: Conversation) => {
     if (selectedConversation) {
 
       let selectedConversation_: Conversation = providedSelectedConversation ?
-       providedSelectedConversation : selectedConversation;
-  
+        providedSelectedConversation : selectedConversation;
+
       let updatedConversation: Conversation;
 
       if (isResend) {
@@ -437,10 +437,9 @@ export default function Home() {
       fetchModels(apiKey);
     }
 
-    const usingEnv = localStorage.getItem("isUsingEnv");
+    const usingEnv = !!localStorage.getItem("isUsingEnv");
     if (usingEnv) {
-      setIsUsingEnv(usingEnv === "true");
-      fetchModels("");
+      setIsUsingEnv(usingEnv);
     }
 
     if (window.innerWidth < 640) {
@@ -475,6 +474,13 @@ export default function Home() {
       });
     }
   }, []);
+
+  useEffect(() => {
+    if (isUsingEnv) {
+      fetchModels("");
+    }
+  }, [isUsingEnv]);
+
 
   return (
     <>
