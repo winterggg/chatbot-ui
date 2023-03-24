@@ -125,6 +125,7 @@ export const Chat: FC<Props> = ({ conversation, models, apiKey, isUsingEnv, mess
                   <ChatMessage
                     key={index}
                     message={message}
+                    messageIsStreaming={messageIsStreaming}
                     onChangeMessage={onChangeMessage.bind(null, index)}
                     lightMode={lightMode}
                   />

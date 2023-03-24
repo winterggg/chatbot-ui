@@ -9,10 +9,11 @@ import { IconTrash, IconRefresh, IconEdit } from "@tabler/icons-react";
 interface Props {
   message: Message;
   lightMode: "light" | "dark";
-  onChangeMessage: (type: "del" | "edit" | "regen" ,message: string) => void;
+  onChangeMessage: (type: "del" | "edit" | "regen", message: string) => void;
+  messageIsStreaming: boolean;
 }
 
-export const ChatMessage: FC<Props> = ({ message, lightMode, onChangeMessage }) => {
+export const ChatMessage: FC<Props> = ({ message, lightMode, onChangeMessage, messageIsStreaming }) => {
 
   const [isEditing, setIsEditing] = useState(false);
 
@@ -102,8 +103,10 @@ export const ChatMessage: FC<Props> = ({ message, lightMode, onChangeMessage }) 
                 </ReactMarkdown>
               )}
               <div className="group-hover:opacity-100 opacity-0 transition-opacity duration-300
-              absolute bottom-4 right-0 bg-gray-200 dark:bg-gray-800 rounded-md p-2 flex items-center
-              ">
+              absolute bottom-2 right-0 bg-gray-200 dark:bg-gray-800 rounded-md p-2 flex items-center
+              "
+                style={{ display: messageIsStreaming ? "none" : "flex" }}
+              >
                 <button
                   className="mr-2"
                   onClick={handleEditMessageContent}
