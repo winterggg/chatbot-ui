@@ -1,5 +1,6 @@
 import { OpenAIModel, OpenAIModelID, OpenAIModels } from "@/types";
-import { API_URL } from "@/utils/config";
+
+const API_URL = process.env.API_URL || "https://api.openai.com/v1";
 
 export const config = {
   runtime: "edge"

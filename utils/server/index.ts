@@ -1,6 +1,7 @@
 import { Message, OpenAIModel } from "@/types";
 import { createParser, ParsedEvent, ReconnectInterval } from "eventsource-parser";
-import { API_URL } from "../config";
+
+const API_URL = process.env.API_URL || "https://api.openai.com/v1";
 
 export const OpenAIStream = async (model: OpenAIModel, systemPrompt: string, key: string, messages: Message[]) => {
   const res = await fetch(`${API_URL}/chat/completions`, {
