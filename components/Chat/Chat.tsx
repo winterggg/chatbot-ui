@@ -20,10 +20,12 @@ interface Props {
   onSend: (message: Message, isResend: boolean) => void;
   onUpdateConversation: (conversation: Conversation, data: KeyValuePair) => void;
   onAcceptEnv: (accept: boolean) => void;
+  onChangeMessage: (index: number, message: string) => void;
   stopConversationRef: MutableRefObject<boolean>;
 }
 
-export const Chat: FC<Props> = ({ conversation, models, apiKey, isUsingEnv, messageIsStreaming, modelError, messageError, loading, lightMode, onSend, onUpdateConversation, onAcceptEnv, stopConversationRef }) => {
+export const Chat: FC<Props> = ({ conversation, models, apiKey, isUsingEnv, messageIsStreaming, modelError, messageError, loading,
+  lightMode, onSend, onUpdateConversation, onAcceptEnv, onChangeMessage, stopConversationRef }) => {
   const [currentMessage, setCurrentMessage] = useState<Message>();
   const [autoScrollEnabled, setAutoScrollEnabled] = useState(true);
 
@@ -122,6 +124,7 @@ export const Chat: FC<Props> = ({ conversation, models, apiKey, isUsingEnv, mess
                   <ChatMessage
                     key={index}
                     message={message}
+                    onChangeMessage={onChangeMessage.bind(null, index)}
                     lightMode={lightMode}
                   />
                 ))}

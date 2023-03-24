@@ -27,6 +27,28 @@ export default function Home() {
 
   const stopConversationRef = useRef<boolean>(false);
 
+  function changeMessage(index: number, newMessage: string) {
+    if (!selectedConversation) {
+      return;
+    }
+
+    const updatedConversation = {
+      ...selectedConversation,
+      messages: selectedConversation.messages.map((message, i) => {
+        if (i === index) {
+          return {
+            ...message,
+            content: newMessage
+          };
+        }
+
+        return message;
+      })
+    };
+
+    setSelectedConversation(updatedConversation);
+  }
+
   const handleSend = async (message: Message, isResend: boolean) => {
     if (selectedConversation) {
       let updatedConversation: Conversation;
@@ -491,6 +513,7 @@ export default function Home() {
               onSend={handleSend}
               onUpdateConversation={handleUpdateConversation}
               onAcceptEnv={handleEnvChange}
+              onChangeMessage={changeMessage}
               stopConversationRef={stopConversationRef}
             />
           </article>
