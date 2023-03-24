@@ -20,7 +20,8 @@ interface Props {
   onSend: (message: Message, isResend: boolean) => void;
   onUpdateConversation: (conversation: Conversation, data: KeyValuePair) => void;
   onAcceptEnv: (accept: boolean) => void;
-  onChangeMessage: (index: number, message: string) => void;
+  onChangeMessage: (index: number, type: "del" | "edit" | "regen",
+    message: string) => void;
   stopConversationRef: MutableRefObject<boolean>;
 }
 

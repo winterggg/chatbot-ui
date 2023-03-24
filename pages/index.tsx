@@ -27,44 +27,83 @@ export default function Home() {
 
   const stopConversationRef = useRef<boolean>(false);
 
-  function changeMessage(index: number, newMessage: string) {
+  function changeMessage(index: number, type: "del" | "edit" | "regen", newMessage: string) {
     if (!selectedConversation) {
       return;
     }
 
-    const updatedConversation = {
-      ...selectedConversation,
-      messages: selectedConversation.messages.map((message, i) => {
-        if (i === index) {
-          return {
-            ...message,
-            content: newMessage
-          };
-        }
+    let updatedConversation: Conversation = selectedConversation;
+    let updatedMessage: Message = selectedConversation.messages[index];
 
-        return message;
-      })
-    };
+    if (type === "edit") {
+      updatedConversation = {
+        ...selectedConversation,
+        messages: selectedConversation.messages.map((message, i) => {
+          if (i === index) {
+            return {
+              ...message,
+              content: newMessage
+            };
+          }
+
+          return message;
+        })
+      };
+    } else if (type === "del") {
+      updatedConversation = {
+        ...selectedConversation,
+        messages: selectedConversation.messages.filter((_, i) => i !== index)
+      };
+    } else if (type === "regen") {
+      let lastUserMessageIndex = -1;
+      for (let i = index; i >= 0; i--) {
+        if (selectedConversation.messages[i].role === "user") {
+          lastUserMessageIndex = i;
+          break;
+        }
+      }
+
+      if (lastUserMessageIndex === -1) {
+        return;
+      }
+
+      // 截断
+      updatedMessage = selectedConversation.messages[lastUserMessageIndex];
+
+      updatedConversation = {
+        ...selectedConversation,
+        messages: selectedConversation.messages.slice(0, lastUserMessageIndex)
+      };
+    }
 
     setSelectedConversation(updatedConversation);
+
+    if (type === "regen") {
+
+      handleSend(updatedMessage, false, updatedConversation);
+    }
   }
 
-  const handleSend = async (message: Message, isResend: boolean) => {
+  const handleSend = async (message: Message, isResend: boolean, providedSelectedConversation?: Conversation ) => {
     if (selectedConversation) {
+
+      let selectedConversation_: Conversation = providedSelectedConversation ?
+       providedSelectedConversation : selectedConversation;
+  
       let updatedConversation: Conversation;
 
       if (isResend) {
-        const updatedMessages = [...selectedConversation.messages];
+        const updatedMessages = [...selectedConversation_.messages];
         updatedMessages.pop();
 
         updatedConversation = {
-          ...selectedConversation,
+          ...selectedConversation_,
           messages: [...updatedMessages, message]
         };
       } else {
         updatedConversation = {
-          ...selectedConversation,
-          messages: [...selectedConversation.messages, message]
+          ...selectedConversation_,
+          messages: [...selectedConversation_.messages, message]
         };
       }
 

@@ -4,14 +4,15 @@ import { FC, useRef, useState } from "react";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import { CodeBlock } from "../Markdown/CodeBlock";
+import { IconTrash, IconRefresh, IconEdit } from "@tabler/icons-react";
 
 interface Props {
   message: Message;
   lightMode: "light" | "dark";
-  onChangeMessage: (message: string) => void;
+  onChangeMessage: (type: "del" | "edit" | "regen" ,message: string) => void;
 }
 
-export const ChatMessage: FC<Props> = ({ message, lightMode , onChangeMessage }) => {
+export const ChatMessage: FC<Props> = ({ message, lightMode, onChangeMessage }) => {
 
   const [isEditing, setIsEditing] = useState(false);
 
@@ -24,16 +25,15 @@ export const ChatMessage: FC<Props> = ({ message, lightMode , onChangeMessage })
 
   const handleSubmmitMessageContent = () => {
     setIsEditing(false);
-    onChangeMessage(textareaRef.current?.value.trim() || message.content);
+    onChangeMessage("edit", textareaRef.current?.value.trim() || message.content);
   }
 
   return (
     <div
-      onDoubleClick={handleEditMessageContent}
       className={`group ${message.role === "assistant" ? "text-gray-800 dark:text-gray-100 border-b border-black/10 dark:border-gray-900/50 bg-gray-50 dark:bg-[#444654]" : "text-gray-800 dark:text-gray-100 border-b border-black/10 dark:border-gray-900/50 bg-white dark:bg-[#343541]"}`}
       style={{ overflowWrap: "anywhere" }}
     >
-      <div className="text-base gap-4 md:gap-6 md:max-w-2xl lg:max-w-2xl xl:max-w-3xl p-4 md:py-6 flex lg:px-0 m-auto">
+      <div className="relative text-base gap-4 md:gap-6 md:max-w-2xl lg:max-w-2xl xl:max-w-3xl p-4 md:py-6 flex lg:px-0 m-auto">
         {isEditing ? (<>
           <div className="font-bold min-w-[40px]">{message.role === "assistant" ? "AI:" : "You:"}</div>
           <div className="prose dark:prose-invert mt-[-2px] w-full">
@@ -101,6 +101,27 @@ export const ChatMessage: FC<Props> = ({ message, lightMode , onChangeMessage })
                   {message.content}
                 </ReactMarkdown>
               )}
+              <div className="group-hover:opacity-100 opacity-0 transition-opacity duration-300
+              absolute bottom-4 right-0 bg-gray-200 dark:bg-gray-800 rounded-md p-2 flex items-center
+              ">
+                <button
+                  className="mr-2"
+                  onClick={handleEditMessageContent}
+                >
+                  <IconEdit size={20} />
+                </button>
+                <button
+                  className="mr-2"
+                  onClick={() => onChangeMessage("del", "")}
+                >
+                  <IconTrash size={20} />
+                </button>
+                <button
+                  onClick={() => onChangeMessage("regen", "")}
+                >
+                  <IconRefresh size={20} />
+                </button>
+              </div>
             </div>
           </>)}
       </div>
