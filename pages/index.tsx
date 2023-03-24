@@ -32,55 +32,66 @@ export default function Home() {
       return;
     }
 
-    let updatedConversation: Conversation = selectedConversation;
-    let updatedMessage: Message = selectedConversation.messages[index];
-
     if (type === "edit") {
-      updatedConversation = {
-        ...selectedConversation,
-        messages: selectedConversation.messages.map((message, i) => {
-          if (i === index) {
-            return {
-              ...message,
-              content: newMessage
-            };
-          }
-
-          return message;
-        })
-      };
-    } else if (type === "del") {
-      updatedConversation = {
-        ...selectedConversation,
-        messages: selectedConversation.messages.filter((_, i) => i !== index)
-      };
-    } else if (type === "regen") {
-      let lastUserMessageIndex = -1;
-      for (let i = index; i >= 0; i--) {
-        if (selectedConversation.messages[i].role === "user") {
-          lastUserMessageIndex = i;
-          break;
+      setSelectedConversation((selectedConversation) => {
+        if (!selectedConversation) {
+          return;
         }
-      }
 
-      if (lastUserMessageIndex === -1) {
-        return;
-      }
+        const updatedMessages = [...selectedConversation.messages];
+        updatedMessages[index] = {
+          ...updatedMessages[index],
+          content: newMessage
+        };
 
-      // 截断
-      updatedMessage = selectedConversation.messages[lastUserMessageIndex];
+        return {
+          ...selectedConversation,
+          messages: updatedMessages
+        };
+      });
 
-      updatedConversation = {
-        ...selectedConversation,
-        messages: selectedConversation.messages.slice(0, lastUserMessageIndex)
-      };
-    }
+    } else if (type === "del") {
+      setSelectedConversation((selectedConversation) => {
+        if (!selectedConversation) {
+          return;
+        }
 
-    setSelectedConversation(updatedConversation);
+        const updatedMessages = [...selectedConversation.messages];
+        updatedMessages.splice(index, 1);
 
-    if (type === "regen") {
+        return {
+          ...selectedConversation,
+          messages: updatedMessages
+        };
+      });
+    } else if (type === "regen") {
 
-      handleSend(updatedMessage, false, updatedConversation);
+      setSelectedConversation((selectedConversation) => {
+        if (!selectedConversation) {
+          return;
+        }
+
+        let lastUserMessageIndex = -1;
+        for (let i = index; i >= 0; i--) {
+          if (selectedConversation.messages[i].role === "user") {
+            lastUserMessageIndex = i;
+            break;
+          }
+        }
+
+        if (lastUserMessageIndex === -1) {
+          return;
+        }
+
+        let updatedConversation: Conversation = {
+          ...selectedConversation,
+          messages: selectedConversation.messages.slice(0, lastUserMessageIndex)
+        }
+
+        handleSend(selectedConversation.messages[lastUserMessageIndex], false, updatedConversation);
+
+        return updatedConversation;
+      });
     }
   }
 
